@@ -7,40 +7,366 @@
     "sample_id",
     "actors",
     "facts",
-    "constraints"
+    "constraints",
+    "departments",
+    "customers",
+    "verifications",
+    "pickup_batches",
+    "parcels",
+    "reports",
+    "leads"
   ],
   "properties": {
-    "domain": {
-      "type": "string"
-    },
-    "version": {
-      "type": "integer",
-      "minimum": 1
-    },
-    "sample_id": {
-      "type": "string"
-    },
+    "domain": { "type": "string" },
+    "version": { "type": "integer", "minimum": 1 },
+    "sample_id": { "type": "string" },
     "actors": {
       "type": "array",
       "minItems": 2,
-      "items": {
-        "type": "string"
-      }
+      "items": { "type": "string" }
     },
     "facts": {
       "type": "array",
       "minItems": 2,
-      "items": {
-        "type": "string"
-      }
+      "items": { "type": "string" }
     },
     "constraints": {
       "type": "array",
       "minItems": 3,
+      "items": { "type": "string" }
+    },
+    "departments": {
+      "type": "array",
+      "minItems": 2,
       "items": {
-        "type": "string"
+        "type": "object",
+        "required": ["code", "name", "jurisdiction"],
+        "properties": {
+          "code": { "enum": ["postal", "market"] },
+          "name": { "type": "string" },
+          "jurisdiction": { "type": "string" }
+        },
+        "additionalProperties": false
       }
+    },
+    "customers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["customer_id", "name", "qualification_snapshot"],
+        "properties": {
+          "customer_id": { "type": "string" },
+          "name": { "type": "string" },
+          "qualification_snapshot": { "$ref": "#/$defs/qualificationSnapshot" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "verifications": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/verification" }
+    },
+    "pickup_batches": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/pickupBatch" }
+    },
+    "parcels": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/parcel" }
+    },
+    "reports": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/report" }
+    },
+    "leads": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/lead" }
     }
   },
-  "additionalProperties": false
+  "additionalProperties": false,
+  "$defs": {
+    "qualificationSnapshot": {
+      "type": "object",
+      "required": [
+        "snapshot_id",
+        "license_no",
+        "registered_premises",
+        "external_warehouses",
+        "verification_code",
+        "code_payload_hash",
+        "snapshot_at",
+        "first_pickup_batch"
+      ],
+      "properties": {
+        "snapshot_id": { "type": "string" },
+        "license_no": { "type": "string" },
+        "registered_premises": { "type": "string" },
+        "external_warehouses": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["warehouse_id", "address", "declared_at"],
+            "properties": {
+              "warehouse_id": { "type": "string" },
+              "address": { "type": "string" },
+              "declared_at": { "type": "string" }
+            },
+            "additionalProperties": false
+          }
+        },
+        "verification_code": { "type": "string" },
+        "code_payload_hash": { "type": "string" },
+        "snapshot_at": { "type": "string" },
+        "first_pickup_batch": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "verification": {
+      "type": "object",
+      "required": [
+        "verification_code",
+        "batch_id",
+        "first_scan_at",
+        "payload_hash",
+        "result",
+        "scan_attempts"
+      ],
+      "properties": {
+        "verification_code": { "type": "string" },
+        "batch_id": { "type": "string" },
+        "first_scan_at": { "type": "string" },
+        "payload_hash": { "type": "string" },
+        "result": { "enum": ["pass", "quarantined"] },
+        "scan_attempts": { "type": "integer", "minimum": 1 }
+      },
+      "additionalProperties": false
+    },
+    "pickupBatch": {
+      "type": "object",
+      "required": [
+        "batch_id",
+        "customer_id",
+        "courier_id",
+        "pickup_site",
+        "picked_at",
+        "real_name_check",
+        "visual_inspection",
+        "security_check",
+        "temperature_control",
+        "parcels",
+        "handovers"
+      ],
+      "properties": {
+        "batch_id": { "type": "string" },
+        "customer_id": { "type": "string" },
+        "courier_id": { "type": "string" },
+        "pickup_site": {
+          "type": "object",
+          "required": ["address", "matches"],
+          "properties": {
+            "address": { "type": "string" },
+            "matches": {
+              "type": ["string", "null"],
+              "description": "registered 表示登记场所；外设仓库ID表示已登记外设仓；null 表示均不匹配"
+            }
+          },
+          "additionalProperties": false
+        },
+        "picked_at": { "type": "string" },
+        "real_name_check": { "enum": ["pass", "fail"] },
+        "visual_inspection": { "enum": ["pass", "fail"] },
+        "security_check": { "enum": ["pass", "fail"] },
+        "temperature_control": {
+          "type": "object",
+          "required": ["mode", "range_celsius"],
+          "properties": {
+            "mode": { "enum": ["none", "refrigerated", "frozen"] },
+            "range_celsius": {
+              "type": ["array", "null"],
+              "minItems": 2,
+              "maxItems": 2,
+              "items": { "type": "number" }
+            }
+          },
+          "additionalProperties": false
+        },
+        "parcels": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "handovers": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/handover" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "handover": {
+      "type": "object",
+      "required": ["handover_id", "from_org", "to_org", "at", "temperature_celsius", "receipt_id"],
+      "properties": {
+        "handover_id": { "type": "string" },
+        "from_org": { "type": "string" },
+        "to_org": { "type": "string" },
+        "at": { "type": "string" },
+        "temperature_celsius": { "type": ["number", "null"] },
+        "receipt_id": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "parcel": {
+      "type": "object",
+      "required": ["parcel_no", "batch_id", "status", "blocked_gap"],
+      "properties": {
+        "parcel_no": { "type": "string" },
+        "batch_id": { "type": "string" },
+        "status": { "enum": ["blocked", "in_network"] },
+        "blocked_gap": {
+          "type": ["string", "null"],
+          "description": "未通过入网闸门时停住的缺口：CODE_TAMPERED / SITE_MISMATCH / REAL_NAME / INSPECTION / SECURITY / TEMPERATURE / ACTIVE_LEAD"
+        }
+      },
+      "additionalProperties": false
+    },
+    "report": {
+      "type": "object",
+      "required": [
+        "report_id",
+        "type",
+        "parcel_no",
+        "batch_id",
+        "detail",
+        "evidence_refs",
+        "reported_at",
+        "reporter_sealed"
+      ],
+      "properties": {
+        "report_id": { "type": "string" },
+        "type": {
+          "enum": ["address_mismatch", "packaging_anomaly", "storage_hazard"]
+        },
+        "parcel_no": { "type": "string" },
+        "batch_id": { "type": "string" },
+        "detail": { "type": "string" },
+        "evidence_refs": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "reported_at": { "type": "string" },
+        "reporter_sealed": {
+          "type": "object",
+          "required": ["seal_id", "vault_ref", "sealed_at"],
+          "properties": {
+            "seal_id": { "type": "string" },
+            "vault_ref": { "type": "string" },
+            "sealed_at": { "type": "string" }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "lead": {
+      "type": "object",
+      "required": [
+        "lead_id",
+        "source",
+        "related_report_ids",
+        "parcel_nos",
+        "origin_jurisdiction",
+        "current_jurisdiction",
+        "created_at",
+        "origin_due_at",
+        "status",
+        "frozen",
+        "merged_into",
+        "postal_confirmation",
+        "supplements",
+        "events"
+      ],
+      "properties": {
+        "lead_id": { "type": "string" },
+        "source": { "type": "object" },
+        "related_report_ids": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "parcel_nos": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "origin_jurisdiction": { "type": "string" },
+        "current_jurisdiction": { "type": "string" },
+        "created_at": { "type": "string" },
+        "origin_due_at": {
+          "type": "string",
+          "description": "原始办理期限；补正、跨辖区移交均沿用此期限，不重新计时"
+        },
+        "status": {
+          "enum": ["INVESTIGATING", "MERGED", "RELEASED", "CLOSED"]
+        },
+        "frozen": { "type": "boolean" },
+        "merged_into": { "type": ["string", "null"] },
+        "postal_confirmation": {
+          "type": ["object", "null"],
+          "required": ["at", "summary"],
+          "properties": {
+            "at": { "type": "string" },
+            "summary": { "type": "string" }
+          },
+          "additionalProperties": false
+        },
+        "supplements": {
+          "type": "array",
+          "description": "冻结后的补充材料；只能追加新版本，不得覆盖既有版本",
+          "items": {
+            "type": "object",
+            "required": ["version", "title", "content_ref", "added_at"],
+            "properties": {
+              "version": { "type": "integer", "minimum": 1 },
+              "title": { "type": "string" },
+              "content_ref": { "type": "string" },
+              "added_at": { "type": "string" }
+            },
+            "additionalProperties": false
+          }
+        },
+        "events": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["seq", "type", "at"],
+            "properties": {
+              "seq": { "type": "integer", "minimum": 1 },
+              "type": {
+                "enum": [
+                  "CREATED",
+                  "POSTAL_CONFIRMED",
+                  "MARKET_DECISION",
+                  "FROZEN",
+                  "SUPPLEMENT_APPENDED",
+                  "RETURNED_FOR_CORRECTION",
+                  "TRANSFERRED"
+                ]
+              },
+              "at": { "type": "string" },
+              "decision": {
+                "enum": ["ACCEPT", "TRANSFER", "MERGE", "RELEASED"]
+              },
+              "summary": { "type": "string" },
+              "note": { "type": "string" },
+              "version": { "type": "integer" },
+              "from_jurisdiction": { "type": "string" },
+              "to_jurisdiction": { "type": "string" },
+              "receipt_id": { "type": "string" },
+              "preserved_due_at": { "type": "string" },
+              "merged_into": { "type": "string" }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  }
 }

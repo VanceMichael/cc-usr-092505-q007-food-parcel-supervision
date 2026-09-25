@@ -1,6 +1,6 @@
 {
   "domain": "food-parcel-supervision",
-  "version": 1,
+  "version": 2,
   "sample_id": "sample-007",
   "actors": [
     "快递员",
@@ -9,15 +9,482 @@
     "市场监管人员"
   ],
   "facts": [
-    "湖南建立市场监管与邮政管理的信息互通和线索互移机制",
-    "首次揽件可核验经营许可及实际揽件场地",
-    "快递员可作为监督员上报违法和储运风险"
+    "湖南省建立市场监管与邮政管理信息互通、线索互移机制",
+    "首次为食品协议客户揽件须核验经营许可、登记场所与实际揽件场地，并保存资质快照与核验码",
+    "外设仓库须在资质快照中登记，实际揽件地与登记场所或外设仓库不一致即为地址不符",
+    "实名收寄、验视、安检结果随揽件批次记录，温控食品记录温控要求与运输交接测温",
+    "快递员可作为监督员上报地址不符、包装异常和储运隐患，举报人身份另行封存",
+    "邮政部门先确认寄递事实，市场监管人员再决定受理、移交、合并调查或解除",
+    "线索冻结后补充材料只以追加版本保存，退回补正与跨辖区移交携带原期限和交接回执，部门切换不重新计时",
+    "同一核验码扫码重试只形成一次核验，码上内容相对快照改变的立即隔离",
+    "任何包裹获准进入寄递网络前，须确认当前证据上没有生效风险，未通过的食品明确停在哪个缺口"
   ],
   "constraints": [
-    "客户资质快照",
-    "揽件场所核验",
-    "寄递批次交接",
-    "跨部门线索流转",
-    "举报人保护"
+    "客户资质快照与核验码",
+    "登记场所与外设仓库",
+    "扫码单次核验与篡改即隔离",
+    "揽件批次与实名验视安检",
+    "温控要求与运输交接",
+    "快递员三类问题上报",
+    "寄递事实邮政先确认",
+    "受理移交合并解除四处置",
+    "线索冻结与追加版本",
+    "补正移交携带原期限",
+    "跨辖区交接回执",
+    "两部门字段最小授权",
+    "举报人身份封存",
+    "入网前生效风险闸门",
+    "未通过缺口定位",
+    "包裹编号全链路追溯"
+  ],
+  "departments": [
+    {
+      "code": "postal",
+      "name": "邮政管理部门",
+      "jurisdiction": "湖南省邮政管理局（示例）"
+    },
+    {
+      "code": "market",
+      "name": "市场监管部门",
+      "jurisdiction": "湖南省市场监督管理局（示例）"
+    }
+  ],
+  "customers": [
+    {
+      "customer_id": "CUST-1001",
+      "name": "湖南示例湘味食品有限公司",
+      "qualification_snapshot": {
+        "snapshot_id": "QS-1001-1",
+        "license_no": "JY14301020260001（示例证号）",
+        "registered_premises": "长沙市开福区芙蓉北路示例段88号",
+        "external_warehouses": [
+          {
+            "warehouse_id": "WH-1001-A",
+            "address": "长沙县安沙镇示例物流园3号仓",
+            "declared_at": "2026-08-28T10:00:00+08:00"
+          }
+        ],
+        "verification_code": "VC-HUNAN-1001",
+        "code_payload_hash": "sha256:7d2f9a41c8b34e60a1f5d2c7b9e04321a6f8d0c3b5e7a9124d6f80b3c5e7a912",
+        "snapshot_at": "2026-09-01T08:30:00+08:00",
+        "first_pickup_batch": "B-20260902-01"
+      }
+    },
+    {
+      "customer_id": "CUST-1002",
+      "name": "株洲示例冷链食品坊",
+      "qualification_snapshot": {
+        "snapshot_id": "QS-1002-1",
+        "license_no": "JY14302020260007（示例证号）",
+        "registered_premises": "株洲市天元区黄河北路示例12号",
+        "external_warehouses": [
+          {
+            "warehouse_id": "WH-1002-A",
+            "address": "株洲市天元区示例冷链仓库B库",
+            "declared_at": "2026-09-05T09:00:00+08:00"
+          }
+        ],
+        "verification_code": "VC-HUNAN-1002",
+        "code_payload_hash": "sha256:1c4e7b902a5f8d346bc9e1f02a7d4c8b5e3f6091a2b7c4d8e5f60718293a4b5c",
+        "snapshot_at": "2026-09-16T15:00:00+08:00",
+        "first_pickup_batch": "B-20260918-01"
+      }
+    }
+  ],
+  "verifications": [
+    {
+      "verification_code": "VC-HUNAN-1001",
+      "batch_id": "B-20260902-01",
+      "first_scan_at": "2026-09-02T08:55:00+08:00",
+      "payload_hash": "sha256:7d2f9a41c8b34e60a1f5d2c7b9e04321a6f8d0c3b5e7a9124d6f80b3c5e7a912",
+      "result": "pass",
+      "scan_attempts": 2
+    },
+    {
+      "verification_code": "VC-HUNAN-1002",
+      "batch_id": "B-20260918-01",
+      "first_scan_at": "2026-09-18T08:40:00+08:00",
+      "payload_hash": "sha256:9f02d6c4b8a11357e0d2f9c64b7a0183d5e7f2c9b4d6081a3f5e7c9b2d406183",
+      "result": "quarantined",
+      "scan_attempts": 2
+    }
+  ],
+  "pickup_batches": [
+    {
+      "batch_id": "B-20260902-01",
+      "customer_id": "CUST-1001",
+      "courier_id": "COURIER-0521",
+      "pickup_site": {
+        "address": "长沙县安沙镇示例物流园3号仓",
+        "matches": "WH-1001-A"
+      },
+      "picked_at": "2026-09-02T09:00:00+08:00",
+      "real_name_check": "pass",
+      "visual_inspection": "pass",
+      "security_check": "pass",
+      "temperature_control": {
+        "mode": "refrigerated",
+        "range_celsius": [0, 8]
+      },
+      "parcels": ["P-9001", "P-9002"],
+      "handovers": [
+        {
+          "handover_id": "HO-5001",
+          "from_org": "开福示例营业部",
+          "to_org": "长沙分拨中心",
+          "at": "2026-09-02T09:40:00+08:00",
+          "temperature_celsius": 5.6,
+          "receipt_id": "RCP-5001"
+        },
+        {
+          "handover_id": "HO-5002",
+          "from_org": "长沙分拨中心",
+          "to_org": "湘B示例冷链车次",
+          "at": "2026-09-02T13:10:00+08:00",
+          "temperature_celsius": 9.4,
+          "receipt_id": "RCP-5002"
+        },
+        {
+          "handover_id": "HO-5003",
+          "from_org": "湘B示例冷链车次",
+          "to_org": "株洲接驳站",
+          "at": "2026-09-02T15:40:00+08:00",
+          "temperature_celsius": 6.0,
+          "receipt_id": "RCP-5003"
+        }
+      ]
+    },
+    {
+      "batch_id": "B-20260910-01",
+      "customer_id": "CUST-1001",
+      "courier_id": "COURIER-0521",
+      "pickup_site": {
+        "address": "长沙市望城区桥驿镇示例未登记仓库2号库",
+        "matches": null
+      },
+      "picked_at": "2026-09-10T09:30:00+08:00",
+      "real_name_check": "pass",
+      "visual_inspection": "pass",
+      "security_check": "pass",
+      "temperature_control": {
+        "mode": "none",
+        "range_celsius": null
+      },
+      "parcels": ["P-9003"],
+      "handovers": [
+        {
+          "handover_id": "HO-5101",
+          "from_org": "望城示例揽投点",
+          "to_org": "长沙分拨中心",
+          "at": "2026-09-10T11:20:00+08:00",
+          "temperature_celsius": null,
+          "receipt_id": "RCP-5101"
+        }
+      ]
+    },
+    {
+      "batch_id": "B-20260918-01",
+      "customer_id": "CUST-1002",
+      "courier_id": "COURIER-0477",
+      "pickup_site": {
+        "address": "株洲市天元区黄河北路示例12号",
+        "matches": "registered"
+      },
+      "picked_at": "2026-09-18T08:30:00+08:00",
+      "real_name_check": "pass",
+      "visual_inspection": "pass",
+      "security_check": "pass",
+      "temperature_control": {
+        "mode": "frozen",
+        "range_celsius": [-18, -15]
+      },
+      "parcels": ["P-9004"],
+      "handovers": []
+    }
+  ],
+  "parcels": [
+    {
+      "parcel_no": "P-9001",
+      "batch_id": "B-20260902-01",
+      "status": "in_network",
+      "blocked_gap": null
+    },
+    {
+      "parcel_no": "P-9002",
+      "batch_id": "B-20260902-01",
+      "status": "in_network",
+      "blocked_gap": null
+    },
+    {
+      "parcel_no": "P-9003",
+      "batch_id": "B-20260910-01",
+      "status": "blocked",
+      "blocked_gap": "SITE_MISMATCH"
+    },
+    {
+      "parcel_no": "P-9004",
+      "batch_id": "B-20260918-01",
+      "status": "blocked",
+      "blocked_gap": "CODE_TAMPERED"
+    }
+  ],
+  "reports": [
+    {
+      "report_id": "R-301",
+      "type": "address_mismatch",
+      "parcel_no": "P-9003",
+      "batch_id": "B-20260910-01",
+      "detail": "实际揽件仓库位于望城区桥驿镇，未在资质快照的登记场所或外设仓库中登记，现场不能说明与持证主体的关系。",
+      "evidence_refs": ["EVID-R301-1 现场定位照片", "EVID-R301-2 仓库门面照片"],
+      "reported_at": "2026-09-10T10:00:00+08:00",
+      "reporter_sealed": {
+        "seal_id": "SEAL-301",
+        "vault_ref": "vault://reporter-identity/SEAL-301",
+        "sealed_at": "2026-09-10T10:00:00+08:00"
+      }
+    },
+    {
+      "report_id": "R-302",
+      "type": "packaging_anomaly",
+      "parcel_no": "P-9003",
+      "batch_id": "B-20260910-01",
+      "detail": "食品外箱破损，封口胶带有二次封箱痕迹，内包装标签与协议客户名称不一致。",
+      "evidence_refs": ["EVID-R302-1 外箱破损照片"],
+      "reported_at": "2026-09-10T10:05:00+08:00",
+      "reporter_sealed": {
+        "seal_id": "SEAL-302",
+        "vault_ref": "vault://reporter-identity/SEAL-302",
+        "sealed_at": "2026-09-10T10:05:00+08:00"
+      }
+    },
+    {
+      "report_id": "R-304",
+      "type": "storage_hazard",
+      "parcel_no": "P-9002",
+      "batch_id": "B-20260902-01",
+      "detail": "冷链运输交接测温9.4℃，超过0–8℃要求，存在食品储运安全隐患。",
+      "evidence_refs": ["EVID-R304-1 交接测温记录", "RCP-5002"],
+      "reported_at": "2026-09-02T13:30:00+08:00",
+      "reporter_sealed": {
+        "seal_id": "SEAL-304",
+        "vault_ref": "vault://reporter-identity/SEAL-304",
+        "sealed_at": "2026-09-02T13:30:00+08:00"
+      }
+    }
+  ],
+  "leads": [
+    {
+      "lead_id": "L-401",
+      "source": {
+        "kind": "report",
+        "report_id": "R-301"
+      },
+      "related_report_ids": ["R-302"],
+      "parcel_nos": ["P-9003"],
+      "origin_jurisdiction": "长沙市开福区市场监督管理局（示例）",
+      "current_jurisdiction": "长沙市望城区市场监督管理局（示例）",
+      "created_at": "2026-09-10T10:05:00+08:00",
+      "origin_due_at": "2026-09-25T18:00:00+08:00",
+      "status": "INVESTIGATING",
+      "frozen": true,
+      "merged_into": null,
+      "postal_confirmation": {
+        "at": "2026-09-10T15:20:00+08:00",
+        "summary": "经核揽件批次B-20260910-01、运单P-9003及揽交记录，寄递事实成立，实际揽件地为望城区未登记仓库。"
+      },
+      "supplements": [
+        {
+          "version": 1,
+          "title": "现场照片与询问笔录",
+          "content_ref": "EVID-L401-V1",
+          "added_at": "2026-09-12T10:00:00+08:00"
+        },
+        {
+          "version": 2,
+          "title": "补正后的仓库租赁情况说明",
+          "content_ref": "EVID-L401-V2",
+          "added_at": "2026-09-14T11:00:00+08:00"
+        }
+      ],
+      "events": [
+        {
+          "seq": 1,
+          "type": "CREATED",
+          "at": "2026-09-10T10:05:00+08:00"
+        },
+        {
+          "seq": 2,
+          "type": "POSTAL_CONFIRMED",
+          "at": "2026-09-10T15:20:00+08:00",
+          "summary": "寄递事实成立"
+        },
+        {
+          "seq": 3,
+          "type": "MARKET_DECISION",
+          "at": "2026-09-11T09:10:00+08:00",
+          "decision": "ACCEPT",
+          "note": "开福区市场监管部门受理"
+        },
+        {
+          "seq": 4,
+          "type": "FROZEN",
+          "at": "2026-09-11T09:40:00+08:00"
+        },
+        {
+          "seq": 5,
+          "type": "SUPPLEMENT_APPENDED",
+          "at": "2026-09-12T10:00:00+08:00",
+          "version": 1
+        },
+        {
+          "seq": 6,
+          "type": "RETURNED_FOR_CORRECTION",
+          "at": "2026-09-13T14:00:00+08:00",
+          "note": "仓库权属材料不清，退回补正",
+          "receipt_id": "RCP-CORR-L-401-6",
+          "preserved_due_at": "2026-09-25T18:00:00+08:00"
+        },
+        {
+          "seq": 7,
+          "type": "SUPPLEMENT_APPENDED",
+          "at": "2026-09-14T11:00:00+08:00",
+          "version": 2
+        },
+        {
+          "seq": 8,
+          "type": "TRANSFERRED",
+          "at": "2026-09-15T10:30:00+08:00",
+          "from_jurisdiction": "长沙市开福区市场监督管理局（示例）",
+          "to_jurisdiction": "长沙市望城区市场监督管理局（示例）",
+          "receipt_id": "RCP-XFER-L-401-8",
+          "preserved_due_at": "2026-09-25T18:00:00+08:00"
+        }
+      ]
+    },
+    {
+      "lead_id": "L-402",
+      "source": {
+        "kind": "verification",
+        "verification_code": "VC-HUNAN-1002",
+        "batch_id": "B-20260918-01"
+      },
+      "related_report_ids": [],
+      "parcel_nos": ["P-9004"],
+      "origin_jurisdiction": "株洲市天元区市场监督管理局（示例）",
+      "current_jurisdiction": "株洲市天元区市场监督管理局（示例）",
+      "created_at": "2026-09-18T08:45:00+08:00",
+      "origin_due_at": "2026-10-08T18:00:00+08:00",
+      "status": "INVESTIGATING",
+      "frozen": false,
+      "merged_into": null,
+      "postal_confirmation": {
+        "at": "2026-09-18T10:10:00+08:00",
+        "summary": "核验码VC-HUNAN-1002所载内容与资质快照不一致，批次B-20260918-01、运单P-9004已当场隔离，寄递事实成立。"
+      },
+      "supplements": [],
+      "events": [
+        {
+          "seq": 1,
+          "type": "CREATED",
+          "at": "2026-09-18T08:45:00+08:00"
+        },
+        {
+          "seq": 2,
+          "type": "POSTAL_CONFIRMED",
+          "at": "2026-09-18T10:10:00+08:00",
+          "summary": "篡改核验码寄递事实成立"
+        },
+        {
+          "seq": 3,
+          "type": "MARKET_DECISION",
+          "at": "2026-09-19T09:00:00+08:00",
+          "decision": "ACCEPT",
+          "note": "天元区市场监管部门受理，包裹维持隔离"
+        }
+      ]
+    },
+    {
+      "lead_id": "L-403",
+      "source": {
+        "kind": "report",
+        "report_id": "R-304"
+      },
+      "related_report_ids": [],
+      "parcel_nos": ["P-9002"],
+      "origin_jurisdiction": "长沙市市场监督管理局（示例）",
+      "current_jurisdiction": "长沙市市场监督管理局（示例）",
+      "created_at": "2026-09-02T14:00:00+08:00",
+      "origin_due_at": "2026-09-17T18:00:00+08:00",
+      "status": "RELEASED",
+      "frozen": false,
+      "merged_into": null,
+      "postal_confirmation": {
+        "at": "2026-09-02T16:00:00+08:00",
+        "summary": "交接单RCP-5002测温异常属实，运单P-9002寄递事实成立。"
+      },
+      "supplements": [],
+      "events": [
+        {
+          "seq": 1,
+          "type": "CREATED",
+          "at": "2026-09-02T14:00:00+08:00"
+        },
+        {
+          "seq": 2,
+          "type": "POSTAL_CONFIRMED",
+          "at": "2026-09-02T16:00:00+08:00",
+          "summary": "冷链断链寄递事实成立"
+        },
+        {
+          "seq": 3,
+          "type": "MARKET_DECISION",
+          "at": "2026-09-06T10:00:00+08:00",
+          "decision": "RELEASED",
+          "note": "企业完成整改，后续交接RCP-5003复测6.0℃符合要求，解除风险"
+        }
+      ]
+    },
+    {
+      "lead_id": "L-404",
+      "source": {
+        "kind": "report",
+        "report_id": "R-302"
+      },
+      "related_report_ids": [],
+      "parcel_nos": ["P-9003"],
+      "origin_jurisdiction": "长沙市开福区市场监督管理局（示例）",
+      "current_jurisdiction": "长沙市开福区市场监督管理局（示例）",
+      "created_at": "2026-09-10T10:20:00+08:00",
+      "origin_due_at": "2026-09-25T18:00:00+08:00",
+      "status": "MERGED",
+      "frozen": false,
+      "merged_into": "L-401",
+      "postal_confirmation": {
+        "at": "2026-09-10T16:00:00+08:00",
+        "summary": "包装异常与批次B-20260910-01、运单P-9003对应，寄递事实成立。"
+      },
+      "supplements": [],
+      "events": [
+        {
+          "seq": 1,
+          "type": "CREATED",
+          "at": "2026-09-10T10:20:00+08:00"
+        },
+        {
+          "seq": 2,
+          "type": "POSTAL_CONFIRMED",
+          "at": "2026-09-10T16:00:00+08:00",
+          "summary": "包装异常寄递事实成立"
+        },
+        {
+          "seq": 3,
+          "type": "MARKET_DECISION",
+          "at": "2026-09-11T09:20:00+08:00",
+          "decision": "MERGE",
+          "merged_into": "L-401",
+          "note": "与地址不符线索指向同一批次同一仓库，合并调查"
+        }
+      ]
+    }
   ]
 }
